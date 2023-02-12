@@ -1,6 +1,8 @@
 package com.cmqs.shirotest;
 
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.config.IniSecurityManagerFactory;
 import org.apache.shiro.mgt.SecurityManager;
@@ -28,7 +30,22 @@ public class ShiroRun {
         try {
             subject.login(token);
             System.out.println("login success");
-        } catch (Exception e) {
+
+            // 5 判断角色
+            boolean hasRole = subject.hasRole("role1");
+            System.out.println("是否拥有此角色="+hasRole);
+
+            // 6 判断权限
+            boolean permitted = subject.isPermitted("user:insert");
+            System.out.println("是否拥有此权限="+permitted);
+            //也可以用checkPermission方法，但没有返回值，没权限抛AuthenticationException
+            subject.checkPermission("user:select");
+
+        } catch (UnknownAccountException e) {
+            System.out.println("用户不存在");
+        } catch (IncorrectCredentialsException e){
+            System.out.println("密码错误");
+        }catch (Exception e) {
             System.out.println("login fail~~");
         }
 
